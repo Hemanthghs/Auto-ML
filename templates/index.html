@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+    <div id="loader">
+    </div>
+
+    <div class="mt-4">
+        <h1>Select the problem type</h1>
+    </div>
+
+    <div class="container">
+        <div class="row">
+          <div class="col textcenter">
+            <div class="mt-4">
+                <a href="/createmodel"><button type="button" class="btn btn-primary">Regression</button></a>
+            </div>
+          </div>
+          <div class="col textcenter">
+            <div class="mt-4">
+                <a href="/createmodel"><button type="button" class="btn btn-primary">Classification</button></a>
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+
+</div>
+<script type="text/javascript">
+    function loading() {
+        $("#loader").show();
+        $("#content").hide();
+    }
+</script>
+
+{%endblock%}
