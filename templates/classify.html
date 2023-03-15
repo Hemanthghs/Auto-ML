@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container">
+
+    <div id="loader">
+    </div>
+
+    <div class="mt-4">
+        <h1>Upload the Input and Output Data</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <input type="file" name="inputs" id="">
+            <input type="file" name="outputs" id="">
+            <button class="btn btn-dark" type="submit" onclick="loading();">Upload</button>
+        </form>
+
+        {%if toast=="success"%}
+        <div class="alert alert-success mt-4" role="alert">
+            <h3>Data uploaded successfully</h3>
+        </div>
+        {% endif %}
+        {% if classes %}
+
+        <div class="mt-4">
+            <h3>Below classes found:</h3>
+            <ol>
+                <!-- {% for class in classes %}
+                <li>{{class}}</li>
+                {% endfor %} -->
+            </ol>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="mt-4">
+        <a href="/createmodel"><button type="button" class="btn btn-primary">Start Training</button></a>
+    </div>
+    <div class="mt-4">
+        <a href="/testimage"><button type="button" class="btn btn-secondary">Test Model</button></a>
+    </div>
+</div>
+<script type="text/javascript">
+    function loading() {
+        $("#loader").show();
+        $("#content").hide();
+    }
+</script>
+
+{%endblock%}

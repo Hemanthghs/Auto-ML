@@ -55,6 +55,10 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html')
 
+@app.route("/classify")
+def classify():
+    return render_template("classify.html")
+
 @app.route('/logout')
 def logout():
     session.pop('user', None)
