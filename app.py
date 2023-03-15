@@ -81,7 +81,7 @@ def upload():
         path = os.path.join('data',fname)
         outputs.save(path)
 
-        page = request.form.get("type")
+        page = request.args.get("type")
         print("********** "+page)
 
         
