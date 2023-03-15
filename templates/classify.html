@@ -8,7 +8,7 @@
 
     <div class="mt-4">
         <h1>Upload the Input and Output Data</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
+        <form action="/upload?type=classify" method="post" enctype="multipart/form-data">
             <input type="file" name="inputs" id="">
             <input type="file" name="outputs" id="">
             <button class="btn btn-dark" type="submit" onclick="loading();">Upload</button>
@@ -24,17 +24,22 @@
         <div class="mt-4">
             <h3>Below classes found:</h3>
             <ol>
-                <!-- {% for class in classes %}
-                <li>{{class}}</li>
-                {% endfor %} -->
+                <li>{{classes}}</li>
             </ol>
+            <form method="post" action="/train">
+                <div class="form-group">
+                  <label for="formGroupExampleInput">Example label</label>
+                  <select class="form-control" name="model">
+                    <option value="logistic">Logistic Regression</option>
+                  </select>
+                  <button type="submit" class="btn btn-primary">Start Training</button>
+                </div>
+            </form>
         </div>
         {% endif %}
     </div>
 
-    <div class="mt-4">
-        <a href="/createmodel"><button type="button" class="btn btn-primary">Start Training</button></a>
-    </div>
+
     <div class="mt-4">
         <a href="/testimage"><button type="button" class="btn btn-secondary">Test Model</button></a>
     </div>
