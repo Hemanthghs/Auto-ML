@@ -2,6 +2,10 @@ from flask import Flask, g, session, redirect, request, render_template, url_for
 import os
 import pymongo
 from decouple import config
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+import pandas as pd
+import joblib
 
 app = Flask(__name__)
 
@@ -82,9 +86,6 @@ def upload():
         outputs.save(path)
 
         page = request.args.get("type")
-        print("********** "+page)
-
-        
         classes = "Data Description"
 
 
@@ -95,7 +96,21 @@ def upload():
 @app.route("/train", methods=["POST"])
 def train():
     model = request.form["model"]
+    if model == "logistic":
+        logistic_model()
     return "Started training" + model
+
+def logistic_model():
+    X = pd.read_csv("inputs.csv")
+    y = pd.read_csv("outputs.csv")
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    model = LogisticRegression()
+    model.fit(X_train, y_train)
+    joblib.dump("models/log_model.sav")
+    return "Training completed"
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
