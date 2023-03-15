@@ -55,5 +55,10 @@ def signup():
         return redirect(url_for('login'))
     return render_template('signup.html')
 
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return render_template('login.html')
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
