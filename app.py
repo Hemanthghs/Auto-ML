@@ -64,5 +64,38 @@ def logout():
     session.pop('user', None)
     return render_template('login.html')
 
+@app.route('/upload', methods=["POST", "GET"])
+def upload():
+    global classes
+    if g.user:
+        global path
+        inputs = request.files["inputs"]
+        fname = inputs.filename
+        print(os.path)
+        path = os.path.join('data',fname)
+        inputs.save(path)
+
+        outputs = request.files["outputs"]
+        fname = outputs.filename
+        print(os.path)
+        path = os.path.join('data',fname)
+        outputs.save(path)
+
+        page = request.form.get("type")
+        print("********** "+page)
+
+        
+        classes = "Data Description"
+
+
+        return render_template("classify.html", toast = "success", username=session['user'], classes=classes)
+    return redirect(url_for('login'))
+
+
+@app.route("/train", methods=["POST"])
+def train():
+    model = request.form["model"]
+    return "Started training" + model
+
 if __name__ == "__main__":
     app.run(debug=True)
