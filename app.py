@@ -15,6 +15,8 @@ MONGODB_URI = config('MONGODB_URI')
 client = pymongo.MongoClient(MONGODB_URI)
 db = client['automl']
 users = db['users']
+counter = db['counter']
+cr_data = db['classification_regression']
 
 @app.before_request
 def before_request():
@@ -73,43 +75,66 @@ def upload():
     global classes
     if g.user:
         global path
+        username = session['user']
         inputs = request.files["inputs"]
         fname = inputs.filename
         print(os.path)
-        path = os.path.join('data',fname)
-        inputs.save(path)
+        input_path = os.path.join('data',fname)
+        inputs.save(input_path)
 
         outputs = request.files["outputs"]
         fname = outputs.filename
         print(os.path)
-        path = os.path.join('data',fname)
-        outputs.save(path)
+        output_path = os.path.join('data',fname)
+        outputs.save(output_path)
 
-        page = request.args.get("type")
+        model_type = request.args.get("type")
+        model_data = counter.find_one({"type":"model"})
+        model_id = model_data['count'] + 1
+        counter.update_one({"type":"model"},{"$set":{"count":model_id}})
+        cr_data.insert_one({"username":username,"model_id":model_id,"input_path":input_path, "output_path":output_path})
+
+        #Return to the upload page 
+        page = model_type + ".html"
+
+
         classes = "Data Description"
 
 
-        return render_template("classify.html", toast = "success", username=session['user'], classes=classes)
+        return render_template(page, toast = "success", username=username, classes=classes, model_id = model_id)
     return redirect(url_for('login'))
 
 
 @app.route("/train", methods=["POST"])
 def train():
     model = request.form["model"]
+    model_id = request.args.get("model_id")
+    model_data = cr_data.find_one({"model_id":int(model_id)})
+    input_data = model_data["input_path"]
+    output_data = model_data["output_path"]
     if model == "logistic":
-        logistic_model()
+        logistic_model(input_data, output_data, model_id)
     return "Started training" + model
 
-def logistic_model():
-    X = pd.read_csv("data/inputs.csv")
-    y = pd.read_csv("data/outputs.csv")
+def logistic_model(input_data, output_data, model_id):
+    X = pd.read_csv(input_data)
+    y = pd.read_csv(output_data)
+    print("Input: ", input_data, "Output: ", output_data)
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     model = LogisticRegression()
     model.fit(X_train, y_train)
-    joblib.dump(model,"models/log_model.sav")
+    model_path = "models/"+"model_"+str(model_id)+".sav"
+    joblib.dump(model, model_path)
+    cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_file":model_path}})
     return "Training completed"
 
-
+@app.route("/clear", methods=["POST", "GET"])
+def clear():
+    if request.method == "POST":
+        counter.update_one({"type":"model"},{"$set":{"count":0}})
+        cr_data.delete_many({})
+        return "<h1>DB cleared successfully...</h1>"
+    return render_template("cleardb.html")
 
 
 if __name__ == "__main__":
