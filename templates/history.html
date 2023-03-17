@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <h3 class="card-title">History</h3>
+    {%for i in data%}
+    <div class="card">
+        <div class="card-body">
+            <p class="card-title"><i>Model ID: </i>{{i[0]}}</h5>
+            <h5 class="card-title"><i>Input Data: </i> {{i[1]}}</h5>
+            <h5 class="card-title"><i>Output Data: </i>{{i[2]}}</h5>
+            <h5 class="card-title"><i>Model File: </i>{{i[3]}}</h5>
+            <h5 class="card-title"><i>Model Name: </i>{{i[4]}}</h5>
+        </div>
+    </div>
+    <br><br>
+    {%endfor%}
+</div>
+
+{% endblock%}

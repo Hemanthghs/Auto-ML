@@ -153,6 +153,21 @@ def model_train(input_data, output_data, model_id, model_name):
     cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_name":model_name}})
     return "Training completed"
 
+@app.route("/history")
+def history():
+    if g.user:
+        data = []
+        for x in cr_data.find({"username":session["user"]}):
+            data.append([
+                x["model_id"],
+                x["input_path"],
+                x["output_path"],
+                x["model_file"],
+                x["model_name"]
+            ])
+    
+    return render_template("history.html",data = data,username=session['user'])
+
 @app.route("/clear", methods=["POST", "GET"])
 def clear():
     if request.method == "POST":
