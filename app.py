@@ -128,9 +128,21 @@ def train():
     model_train(input_data, output_data, model_id, model_name, model_type)
     return "Started training" + model_name
 
+
+def impute_null(data):
+    for col in data.columns:
+        if data[col].isnull().any():
+            if data[col].dtype == "object":
+                data[col] = data[col].fillna(data[col].mode()[0])
+            else:
+                data[col] = data[col].fillna(data[col].mean())
+    return data
+
 def model_train(input_data, output_data, model_id, model_name, model_type):
     X = pd.read_csv(input_data)
     y = pd.read_csv(output_data)
+
+    X = impute_null(X)
 
     #Getting meta data
     parameters = [col for col in X.columns]
@@ -184,7 +196,7 @@ def try_model():
     model_data = cr_data.find_one({"model_id":int(model_id)})
     model_file = model_data["model_file"]
     values = list(request.form.values())
-    values = [int(x) for x in values]
+    values = [float(x) for x in values]
     model = joblib.load(model_file)
     prediction = model.predict([values])
     return "<h1>Prediction: " + str(prediction) + "</h1>"
