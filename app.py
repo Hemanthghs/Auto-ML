@@ -151,6 +151,22 @@ def model_train(input_data, output_data, model_id, model_name):
         }})
     return "Training completed"
 
+@app.route("/try_model", methods=["POST","GET"])
+def try_model():
+    if request.method == "GET":
+        model_id = request.args.get("model_id")
+        model_data = cr_data.find_one({"model_id":int(model_id)})
+        inputs_data = model_data["parameters"]
+        output_name = model_data["output_name"]
+        return render_template("try_model.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id)
+    model_id = request.args.get("model_id")
+    model_data = cr_data.find_one({"model_id":int(model_id)})
+    model_file = model_data["model_file"]
+    values = list(request.form.values())
+    model = joblib.load(model_file)
+    prediction = model.predict([values])
+    return "<h1>Prediction: " + str(prediction) + "</h1>"
+
 @app.route("/history")
 def history():
     if g.user:
@@ -186,7 +202,10 @@ def clear():
         return "<h1>DB cleared successfully...</h1>"
     return render_template("cleardb.html")
 
-def debug():
+def debug(s):
+    print("*"*10)
+    print(type(s))
+    print(s)
     print("*"*10)
 
 
