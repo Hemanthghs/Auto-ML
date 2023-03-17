@@ -7,10 +7,11 @@
     <div class="card">
         <div class="card-body">
             <p class="card-title"><i>Model ID: </i>{{i[0]}}</h5>
-            <h5 class="card-title"><i>Input Data: </i> {{i[1]}}</h5>
-            <h5 class="card-title"><i>Output Data: </i>{{i[2]}}</h5>
-            <h5 class="card-title"><i>Model File: </i>{{i[3]}}</h5>
-            <h5 class="card-title"><i>Model Name: </i>{{i[4]}}</h5>
+            <h5 class="card-title"><i>Input Data: </i> <a href="/download?model_id={{i[0]}}&data=input">{{i[1]}}</a></h5>
+            <h5 class="card-title"><i>Output Data: </i><a href="/download?model_id={{i[0]}}&data=output">{{i[2]}}</a></h5>
+            <h5 class="card-title"><i>Model File: </i><a href="/download?model_id={{i[0]}}&data=model">{{i[3]}}</a></h5>
+            <h5 class="card-title"><i>Model Type: </i>{{i[4]}}</h5>
+            <h5 class="card-title"><i>Algorithm: </i>{{i[5]}}</h5>
         </div>
     </div>
     <br><br>

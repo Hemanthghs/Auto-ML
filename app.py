@@ -67,7 +67,9 @@ def signup():
 
 @app.route("/classify")
 def classify():
-    return render_template("classify.html")
+    if g.user:
+        return render_template("classify.html", username = session["user"])
+    return redirect(url_for("index"))
 
 @app.route('/logout')
 def logout():
@@ -96,7 +98,7 @@ def upload():
         model_data = counter.find_one({"type":"model"})
         model_id = model_data['count'] + 1
         counter.update_one({"type":"model"},{"$set":{"count":model_id}})
-        cr_data.insert_one({"username":username,"model_id":model_id,"input_path":input_path, "output_path":output_path})
+        cr_data.insert_one({"username":username,"model_id":model_id,"input_path":input_path, "output_path":output_path, "model_type":model_type})
 
         #Return to the upload page 
         page = model_type + ".html"
@@ -163,10 +165,22 @@ def history():
                 x["input_path"],
                 x["output_path"],
                 x["model_file"],
-                x["model_name"]
+                x["model_type"],
+                x["model_name"],
             ])
     
     return render_template("history.html",data = data,username=session['user'])
+
+@app.route("/download")
+def download():
+    model_id = request.args.get("model_id")
+    data_type = request.args.get("data")
+    model_data = cr_data.find_one({"model_id":int(model_id)})
+    if data_type == "input":
+        return send_file(model_data["input_path"])
+    elif data_type == "output":
+        return send_file(model_data["output_path"])
+    return send_file(model_data["model_file"])
 
 @app.route("/clear", methods=["POST", "GET"])
 def clear():
