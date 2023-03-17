@@ -8,8 +8,10 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.impute import SimpleImputer
 import pandas as pd
 import joblib
+import numpy as np
 
 app = Flask(__name__)
 
@@ -163,6 +165,7 @@ def try_model():
     model_data = cr_data.find_one({"model_id":int(model_id)})
     model_file = model_data["model_file"]
     values = list(request.form.values())
+    values = [int(x) for x in values]
     model = joblib.load(model_file)
     prediction = model.predict([values])
     return "<h1>Prediction: " + str(prediction) + "</h1>"
