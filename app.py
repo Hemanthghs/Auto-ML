@@ -4,6 +4,10 @@ import pymongo
 from decouple import config
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
 import pandas as pd
 import joblib
 
@@ -107,14 +111,13 @@ def upload():
 
 @app.route("/train", methods=["POST"])
 def train():
-    model = request.form["model"]
+    model_name = request.form["model"]
     model_id = request.args.get("model_id")
     model_data = cr_data.find_one({"model_id":int(model_id)})
     input_data = model_data["input_path"]
     output_data = model_data["output_path"]
-    if model == "logistic":
-        logistic_model(input_data, output_data, model_id)
-    return "Started training" + model
+    model_train(input_data, output_data, model_id, model_name)
+    return "Started training" + model_name
 
 def logistic_model(input_data, output_data, model_id):
     X = pd.read_csv(input_data)
@@ -126,6 +129,28 @@ def logistic_model(input_data, output_data, model_id):
     model_path = "models/"+"model_"+str(model_id)+".sav"
     joblib.dump(model, model_path)
     cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_file":model_path}})
+    return "Training completed"
+
+def model_train(input_data, output_data, model_id, model_name):
+    X = pd.read_csv(input_data)
+    y = pd.read_csv(output_data)
+    print("Input: ", input_data, "Output: ", output_data)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    if model_name == "logistc":
+        model = LogisticRegression()
+    elif model_name == "decision_tree":
+        model = DecisionTreeClassifier()
+    elif model_name == "random_forest":
+        model = RandomForestClassifier()
+    elif model_name == "svm":
+        model = SVC()
+    else:
+        model = KNeighborsClassifier()
+    model.fit(X_train, y_train)
+    model_path = "models/"+"model_"+str(model_id)+".sav"
+    joblib.dump(model, model_path)
+    cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_file":model_path}})
+    cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_name":model_name}})
     return "Training completed"
 
 @app.route("/clear", methods=["POST", "GET"])
