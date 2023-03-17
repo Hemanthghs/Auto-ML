@@ -28,7 +28,6 @@ def before_request():
     if 'user' in session:
         g.user = session['user']
 
-
 @app.route("/")
 def index():
     if request.method == "GET":
@@ -45,7 +44,6 @@ def login():
         if user_list:
             if request.form['password'] == user_list['password']:
                 session['user'] = request.form['username']
-                # return render_template('index.html',username=session['user'])
                 return redirect(url_for('index',username=session['user']))
             return render_template('login.html',invalid_user="Invalid Username or Password")
         return render_template('login.html',invalid_user="Invalid Username or Password")
@@ -121,22 +119,15 @@ def train():
     model_train(input_data, output_data, model_id, model_name)
     return "Started training" + model_name
 
-def logistic_model(input_data, output_data, model_id):
-    X = pd.read_csv(input_data)
-    y = pd.read_csv(output_data)
-    print("Input: ", input_data, "Output: ", output_data)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    model = LogisticRegression()
-    model.fit(X_train, y_train)
-    model_path = "models/"+"model_"+str(model_id)+".sav"
-    joblib.dump(model, model_path)
-    cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_file":model_path}})
-    return "Training completed"
-
 def model_train(input_data, output_data, model_id, model_name):
     X = pd.read_csv(input_data)
     y = pd.read_csv(output_data)
-    print("Input: ", input_data, "Output: ", output_data)
+
+    #Getting meta data
+    parameters = [col for col in X.columns]
+    inputs_count = len(parameters)
+    output_name = y.columns[0]
+
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
     if model_name == "logistc":
         model = LogisticRegression()
@@ -151,8 +142,13 @@ def model_train(input_data, output_data, model_id, model_name):
     model.fit(X_train, y_train)
     model_path = "models/"+"model_"+str(model_id)+".sav"
     joblib.dump(model, model_path)
-    cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_file":model_path}})
-    cr_data.update_one({"model_id":int(model_id)},{"$set":{"model_name":model_name}})
+    cr_data.update_one({"model_id":int(model_id)},{"$set":{
+        "model_file":model_path,
+        "model_name":model_name, 
+        "parameters":parameters,
+        "inputs_count":inputs_count,
+        "output_name": output_name
+        }})
     return "Training completed"
 
 @app.route("/history")
@@ -189,6 +185,9 @@ def clear():
         cr_data.delete_many({})
         return "<h1>DB cleared successfully...</h1>"
     return render_template("cleardb.html")
+
+def debug():
+    print("*"*10)
 
 
 if __name__ == "__main__":
