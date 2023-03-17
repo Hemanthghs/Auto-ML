@@ -8,7 +8,7 @@
 
     <div class="mt-4">
         <h1>Upload the Input and Output Data</h1>
-        <form action="/upload?type=classify" method="post" enctype="multipart/form-data">
+        <form action="/upload?type=regression" method="post" enctype="multipart/form-data">
             <input type="file" name="inputs" id="">
             <input type="file" name="outputs" id="">
             <button class="btn btn-dark" type="submit" onclick="loading();">Upload</button>
@@ -30,11 +30,11 @@
                 <div class="form-group">
                   <label for="formGroupExampleInput">Example label</label>
                   <select class="form-control" name="model">
-                    <option value="logistic">Logistic Regression</option>
-                    <option value="decision_tree">Decision Tree</option>
-                    <option value="random_forest">Random Forest</option>
-                    <option value="svm">SVM</option>
-                    <option value="knn">KNN</option>
+                    <option value="linear_reg">Linear Regression</option>
+                    <option value="decision_tree_reg">Decision Tree Regressor</option>
+                    <option value="random_forest_reg">Random Forest Regressor</option>
+                    <option value="svm_reg">SVM Regressor</option>
+                    <option value="knn_reg">KNN Regressor</option>
                   </select>
                   <button type="submit" class="btn btn-primary">Start Training</button>
                 </div>

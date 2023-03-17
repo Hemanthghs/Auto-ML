@@ -3,11 +3,11 @@ import os
 import pymongo
 from decouple import config
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
+from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
+from sklearn.svm import SVC, SVR
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 from sklearn.impute import SimpleImputer
 import pandas as pd
 import joblib
@@ -71,6 +71,12 @@ def classify():
         return render_template("classify.html", username = session["user"])
     return redirect(url_for("index"))
 
+@app.route("/regression")
+def regression():
+    if g.user:
+        return render_template("regression.html", username = session["user"])
+    return redirect(url_for("index"))
+
 @app.route('/logout')
 def logout():
     session.pop('user', None)
@@ -107,7 +113,7 @@ def upload():
         classes = "Data Description"
 
 
-        return render_template(page, toast = "success", username=username, classes=classes, model_id = model_id)
+        return render_template(page, toast = "success", username=username, classes=classes, model_id = model_id, model_type = model_type)
     return redirect(url_for('login'))
 
 
@@ -115,13 +121,14 @@ def upload():
 def train():
     model_name = request.form["model"]
     model_id = request.args.get("model_id")
+    model_type = request.args.get("model_type")
     model_data = cr_data.find_one({"model_id":int(model_id)})
     input_data = model_data["input_path"]
     output_data = model_data["output_path"]
-    model_train(input_data, output_data, model_id, model_name)
+    model_train(input_data, output_data, model_id, model_name, model_type)
     return "Started training" + model_name
 
-def model_train(input_data, output_data, model_id, model_name):
+def model_train(input_data, output_data, model_id, model_name, model_type):
     X = pd.read_csv(input_data)
     y = pd.read_csv(output_data)
 
@@ -131,16 +138,28 @@ def model_train(input_data, output_data, model_id, model_name):
     output_name = y.columns[0]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
-    if model_name == "logistc":
-        model = LogisticRegression()
-    elif model_name == "decision_tree":
-        model = DecisionTreeClassifier()
-    elif model_name == "random_forest":
-        model = RandomForestClassifier()
-    elif model_name == "svm":
-        model = SVC()
+    if model_type == "classify":
+        if model_name == "logistic":
+            model = LogisticRegression()
+        elif model_name == "decision_tree":
+            model = DecisionTreeClassifier()
+        elif model_name == "random_forest":
+            model = RandomForestClassifier()
+        elif model_name == "svm":
+            model = SVC()
+        else:
+            model = KNeighborsClassifier()
     else:
-        model = KNeighborsClassifier()
+        if model_name == "linear_reg":
+            model = LinearRegression()
+        elif model_name == "decision_tree_reg":
+            model = DecisionTreeRegressor()
+        elif model_name == "random_forest_reg":
+            model = RandomForestRegressor()
+        elif model_name == "svm_reg":
+            model = SVR()
+        else:
+            model = KNeighborsRegressor()
     model.fit(X_train, y_train)
     model_path = "models/"+"model_"+str(model_id)+".sav"
     joblib.dump(model, model_path)
