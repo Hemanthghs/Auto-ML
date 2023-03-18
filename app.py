@@ -8,7 +8,7 @@ from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.svm import SVC, SVR
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
-from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import joblib
 import numpy as np
@@ -126,8 +126,7 @@ def train():
     input_data = model_data["input_path"]
     output_data = model_data["output_path"]
     model_train(input_data, output_data, model_id, model_name, model_type)
-    return "Started training" + model_name
-
+    return redirect(url_for("history",model_id=model_id))
 
 def impute_null(data):
     for col in data.columns:
@@ -138,11 +137,25 @@ def impute_null(data):
                 data[col] = data[col].fillna(data[col].mean())
     return data
 
+def encode_data(data):
+    le = LabelEncoder()
+    encodings = dict()
+
+    for col in data.columns:
+        if data[col].dtype == "object":
+            data[col] = le.fit_transform(data[col])
+            keys = le.classes_
+            values = le.transform(le.classes_)
+            dictionary = dict(zip(keys, values))
+            encodings[col] = dictionary
+    return data, encodings
+
 def model_train(input_data, output_data, model_id, model_name, model_type):
     X = pd.read_csv(input_data)
     y = pd.read_csv(output_data)
 
     X = impute_null(X)
+    X, encodings = encode_data(X)
 
     #Getting meta data
     parameters = [col for col in X.columns]
@@ -180,9 +193,10 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
         "model_name":model_name, 
         "parameters":parameters,
         "inputs_count":inputs_count,
-        "output_name": output_name
+        "output_name": output_name,
         }})
-    return "Training completed"
+    print(encodings)
+    return
 
 @app.route("/try_model", methods=["POST","GET"])
 def try_model():
@@ -233,7 +247,7 @@ def clear():
     if request.method == "POST":
         counter.update_one({"type":"model"},{"$set":{"count":0}})
         cr_data.delete_many({})
-        return "<h1>DB cleared successfully...</h1>"
+        return redirect(url_for('login'))
     return render_template("cleardb.html")
 
 def debug(s):

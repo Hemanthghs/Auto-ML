@@ -1,21 +1,11 @@
-from app import preprocess
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder
+from app import *
 
+data = pd.read_csv("/home/hemanthsai/Downloads/drug_inputs.csv")
 
-data = pd.read_csv("/home/hemanthsai/Desktop/Auto ML/app/data/data.csv")
-
+data = impute_null(data)
 print(data)
 
-for col in data.columns:
-    if data[col].isnull().any():
-        if data[col].dtype == "object":
-            data[col] = data[col].fillna(data[col].mode()[0])
-        else:
-            data[col] = data[col].fillna(data[col].mean())
-
+data, encodings = encode_data(data)
 print(data)
-
-
-
+print(encodings)
 
