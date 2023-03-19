@@ -146,7 +146,7 @@ def encode_data(data):
             data[col] = le.fit_transform(data[col])
             keys = le.classes_
             values = le.transform(le.classes_)
-            dictionary = dict(zip(keys, values))
+            dictionary = dict(zip(keys, [x.item() for x in values]))
             encodings[col] = dictionary
     return data, encodings
 
@@ -194,8 +194,8 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
         "parameters":parameters,
         "inputs_count":inputs_count,
         "output_name": output_name,
+        "encodings":encodings
         }})
-    print(encodings)
     return
 
 @app.route("/try_model", methods=["POST","GET"])
@@ -217,8 +217,8 @@ def try_model():
 
 @app.route("/history")
 def history():
+    data = []
     if g.user:
-        data = []
         for x in cr_data.find({"username":session["user"]}):
             data.append([
                 x["model_id"],
@@ -229,8 +229,8 @@ def history():
                 x["model_name"],
             ])
     
-    return render_template("history.html",data = data,username=session['user'])
-
+        return render_template("history.html",data = data,username=session['user'])
+    return redirect(url_for('login'))
 @app.route("/download")
 def download():
     model_id = request.args.get("model_id")
