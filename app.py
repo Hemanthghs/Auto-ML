@@ -198,6 +198,14 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
         }})
     return
 
+def parse_encodings(encodings):
+    params = list(encodings.keys())
+    values = list(encodings.values())
+    params_values = []
+    for p,v in zip(params, values):
+        params_values.append([p,v])
+    return params_values
+
 @app.route("/try_model", methods=["POST","GET"])
 def try_model():
     if request.method == "GET":
@@ -205,7 +213,12 @@ def try_model():
         model_data = cr_data.find_one({"model_id":int(model_id)})
         inputs_data = model_data["parameters"]
         output_name = model_data["output_name"]
-        return render_template("try_model.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id)
+        try:
+            encodings = model_data["encodings"]
+            encodings_parsed = parse_encodings(encodings)
+        except:
+            encodings_parsed = None
+        return render_template("try_model.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
     model_id = request.args.get("model_id")
     model_data = cr_data.find_one({"model_id":int(model_id)})
     model_file = model_data["model_file"]
@@ -232,6 +245,7 @@ def history():
         return render_template("history.html",data = data,username=session['user'])
     return redirect(url_for('login'))
 @app.route("/download")
+
 def download():
     model_id = request.args.get("model_id")
     data_type = request.args.get("data")

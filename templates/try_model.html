@@ -3,13 +3,28 @@
 
 <div class="container mt-4">
     <h3 class="card-title">Try Model</h3>
-    <form action="/try_model?model_id={{model_id}}" method="post">
-        {%for i in inputs_data%}
-        <label for="{{i}}">{{i}}</label>
-            <input type="text" name="{{i}}" placeholder="{{i}}"><br>
-        {%endfor%}
-        <button type="submit">Predict</button>
-    </form>
+    <div class="row">
+        <div class="col">
+            <form action="/try_model?model_id={{model_id}}" method="post">
+                {%for i in inputs_data%}
+                <label for="{{i}}">{{i}}</label>
+                <input type="text" name="{{i}}" placeholder="{{i}}"><br>
+                {%endfor%}
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+        <div class="col">
+            {% if encodings %}
+            <h4>Intructions: </h4>
+            {% for param in encodings %}
+                <h5>{{param[0]}} : </h5>
+                {% for key, value in param[1].items() %}
+                <h6>{{key}} : {{value}}</h6>  <br>
+             {% endfor %}
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
 
 </div>
 
