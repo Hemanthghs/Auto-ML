@@ -38,6 +38,20 @@ def index():
             return render_template("index.html",username=session['user'])
         return redirect(url_for('login'))
 
+@app.route('/home')
+def home():
+    data = []
+    if g.user:
+        for x in cr_data.find({"username":session["user"]}):
+            data.append([
+                x["project_name"],
+             x["date"],
+            ])
+    
+        return render_template("home.html",data = data,username=session['user'])
+    return redirect(url_for('login'))
+
+
 @app.route('/login',methods=['GET', 'POST'])
 def login():
     global invalid_user
