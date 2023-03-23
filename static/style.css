@@ -68,6 +68,10 @@ a {
     color: black;
 }
 
+.logout a {
+    color: black;
+}
+
 .nav-item:hover {
     cursor: pointer;
     background-color: rgb(242, 242, 242);

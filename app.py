@@ -12,6 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import joblib
 import numpy as np
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -66,6 +67,27 @@ def signup():
         users.insert_one({"username":username,"password":password})
         return redirect(url_for('login', account_created=True))
     return render_template('signup.html')
+
+@app.route('/create-project', methods=["GET","POST"])
+def createProject():
+    username = session["user"]
+    if request.method == "GET":
+        return render_template("createproject.html", username = username)
+    task_type = request.form["tasktype"]
+    project_name = request.form["projectname"]
+    now = datetime.now()
+    date = now.strftime("%B %d, %Y")
+    model_data = counter.find_one({"type":"model"})
+    model_id = model_data['count'] + 1
+    counter.update_one({"type":"model"},{"$set":{"count":model_id}})
+    cr_data.insert_one({"username":username,"model_id":model_id,"project_name":project_name, "date":date,"task_type":task_type})
+
+    if task_type == "regression":
+        return redirect(url_for('classify'))
+    elif task_type == "classification":
+        return redirect(url_for('regression'))
+    
+
 
 @app.route("/classify")
 def classify():
