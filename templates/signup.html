@@ -6,58 +6,60 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Auto ML</title>
-    <style>
-        .dept {
-            margin-left: 29px;
-    font-weight: 600;
-    color: #083051;
-    font-size: 25px;
-    margin-bottom:8px;
-        }
-    </style>
+    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 
 <body>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
-        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
-        <div>
-            <img src="../static/collegelogo2.jpg" alt="" srcset="" style="width:25%">
-            <div class="dept">Dept. of Artificial Intelligence</div>
+    <div class="nav-block-login">
+        <div class="logo">
+            A Platform for Automatic ML Model Training
         </div>
-    <nav class="navbar-expand-lg navbar navbar-dark bg-dark">
-        <a class="navbar-brand" href="/">A Platform for Automating ML Model Training
-        </a>
-    </nav>
-
-    <h1 class="text-center">Signup</h1>
-    <div class="container col-6">
-        <form action="{{url_for('signup')}}" method="post">
-            <div class="mb-3">
-                <label for="usename" class="form-label">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+    </div>
+    <div class="container">
+        <div class="login">
+            <div>
+                <h2 class="center">Signup</h2>
+                <form action="{{url_for('signup')}}" method="post">
+                    <div class="">
+                        <input type="text" class="login-input" id="username" name="username" placeholder="Username"
+                            required>
                 <div id="" class="form-text" style="color:red;">{{username_taken_msg}}</div>
+                        <input type="password" class="login-input" id="password" name="password" placeholder="Password"
+                            required>
+                    </div>
+                    <div class="center">
+                        <button type="submit" class="start-training-btn">Signup <i class="fa fa-user-plus" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="center newuser-signup">
+                        <a href="{{url_for('login')}}">Already a User? Login <i class="fa fa-sign-in"
+                            aria-hidden="true"></i></a>
+                    </div>
+                </form>
+
             </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+
+            <!-- <div class="line"></div> -->
+            <div class="instructions login-instructions">
+                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Asperiores ab qui sapiente eum voluptas odio
+                distinctio quidem reiciendis in dolor cum mollitia possimus ipsa nesciunt natus vel enim, neque ad
+                accusamus excepturi aliquid tempore aliquam esse temporibus. Laboriosam itaque pariatur minima quam
+                rerum nesciunt fugit qui omnis, blanditiis quasi quisquam, minus quis in, quod dignissimos distinctio
+                vero esse ullam eos soluta veniam expedita incidunt error nam! Nemo quisquam qui minus sint nisi ad
+                temporibus obcaecati quis, recusandae at tenetur nesciunt saepe vel laborum accusamus, asperiores, quae
+                quibusdam beatae provident quos sunt! Earum facere laudantium porro soluta ratione impedit alias vitae
+                accusantium, autem ab excepturi expedita! Nihil nesciunt provident soluta dolore dolores dolor, non
+                facere quo delectus, impedit sit animi repellat eius ipsa incidunt dolorum expedita culpa voluptas omnis
+                voluptates veritatis beatae quibusdam natus. Tenetur aperiam a nisi quam harum? Accusamus veniam, iusto
+                mollitia dolor cumque quas veritatis voluptatibus saepe obcaecati officia rerum dicta quibusdam
+                voluptatem aut dignissimos ad, a voluptatum architecto exercitationem labore vitae. Consectetur enim
+                eius, vel tempora ea porro excepturi vero quas provident nemo culpa obcaecati omnis veritatis. Alias,
+                tempora cupiditate reprehenderit assumenda facere nisi iure cumque, doloribus quod dolores temporibus
+                ullam molestias non inventore. At, iste molestias?
             </div>
-            <button type="submit" class="btn btn-primary">Signup</button>
-            <br><br>
-            <div class="mb-3">
-                <a href="{{url_for('login')}}">Already a User? Login</a>
-            </div>
-        </form>
+        </div>
     </div>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
-        crossorigin="anonymous"></script>
 </body>
 
 </html>

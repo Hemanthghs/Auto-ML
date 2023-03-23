@@ -49,6 +49,8 @@ def login():
                 return redirect(url_for('index',username=session['user']))
             return render_template('login.html',invalid_user="Invalid Username or Password")
         return render_template('login.html',invalid_user="Invalid Username or Password")
+    if request.args.get("account_created"):
+        return render_template('login.html',msg2="Account created successfully")
     return render_template('login.html')
 
 @app.route('/signup',methods=['GET', 'POST'])
@@ -62,7 +64,7 @@ def signup():
             username_taken_msg = "Username already taken, try another one"
             return render_template('signup.html',username_taken_msg=username_taken_msg)
         users.insert_one({"username":username,"password":password})
-        return redirect(url_for('login'))
+        return redirect(url_for('login', account_created=True))
     return render_template('signup.html')
 
 @app.route("/classify")
@@ -222,7 +224,7 @@ def history():
         for x in cr_data.find({"username":session["user"]}):
             data.append([
                 x["model_id"],
-                x["input_path"],
+             x["input_path"],
                 x["output_path"],
                 x["model_file"],
                 x["model_type"],
