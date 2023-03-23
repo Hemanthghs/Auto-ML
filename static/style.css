@@ -64,6 +64,10 @@ a {
     font-size: 16px;
 }
 
+.nav-item a {
+    color: black;
+}
+
 .nav-item:hover {
     cursor: pointer;
     background-color: rgb(242, 242, 242);
