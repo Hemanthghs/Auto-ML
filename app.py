@@ -97,9 +97,9 @@ def createProject():
     cr_data.insert_one({"username":username,"model_id":model_id,"project_name":project_name, "date":date,"task_type":task_type})
 
     if task_type == "regression":
-        return redirect(url_for('classify'))
+        return redirect(url_for('classify', model_id = model_id))
     elif task_type == "classification":
-        return redirect(url_for('regression'))
+        return redirect(url_for('regression', model_id = model_id))
     
 
 
@@ -138,10 +138,7 @@ def upload():
         output_path = os.path.join('data',fname)
         outputs.save(output_path)
 
-        model_type = request.args.get("type")
-        model_data = counter.find_one({"type":"model"})
-        model_id = model_data['count'] + 1
-        counter.update_one({"type":"model"},{"$set":{"count":model_id}})
+        model_type = request.args.get("model_type")
         cr_data.insert_one({"username":username,"model_id":model_id,"input_path":input_path, "output_path":output_path, "model_type":model_type})
 
         #Return to the upload page 
