@@ -93,20 +93,24 @@ def createProject():
     date = now.strftime("%B %d, %Y")
     model_data = counter.find_one({"type":"model"})
     model_id = model_data['count'] + 1
+    debug(model_id)
     counter.update_one({"type":"model"},{"$set":{"count":model_id}})
     cr_data.insert_one({"username":username,"model_id":model_id,"project_name":project_name, "date":date,"task_type":task_type})
 
-    if task_type == "regression":
+    if task_type == "classification":
         return redirect(url_for('classify', model_id = model_id))
-    elif task_type == "classification":
+        # return render_template("classify.html", model_id = model_id)
+    elif task_type == "regression":
         return redirect(url_for('regression', model_id = model_id))
+        # return render_template("regression.html", model_id = model_id)
     
 
 
 @app.route("/classify")
 def classify():
     if g.user:
-        return render_template("classify.html", username = session["user"])
+        model_id = request.args.get("model_id")
+        return render_template("classify.html", username = session["user"], model_id = model_id)
     return redirect(url_for("index"))
 
 @app.route("/regression")
@@ -139,7 +143,12 @@ def upload():
         outputs.save(output_path)
 
         model_type = request.args.get("model_type")
-        cr_data.insert_one({"username":username,"model_id":model_id,"input_path":input_path, "output_path":output_path, "model_type":model_type})
+        model_id = request.args.get("model_id")
+        debug(model_id)
+        cr_data.update_one({"model_id":int(model_id)},{"$set":{
+        "input_path":input_path,
+        "output_path":output_path,
+        }})
 
         #Return to the upload page 
         page = model_type + ".html"
@@ -154,6 +163,7 @@ def upload():
 
 @app.route("/train", methods=["POST"])
 def train():
+    # model_name means algorithm name
     model_name = request.form["model"]
     model_id = request.args.get("model_id")
     model_type = request.args.get("model_type")
@@ -260,7 +270,7 @@ def history():
              x["input_path"],
                 x["output_path"],
                 x["model_file"],
-                x["model_type"],
+                x["task_type"],
                 x["model_name"],
             ])
     

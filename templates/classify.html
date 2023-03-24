@@ -13,16 +13,16 @@
                 <h3>Data uploaded successfully</h3>
             </div>
             {% endif %}
-            <form action="/upload?model_type={{model_type}}" method="post">
+            <form action="/upload?model_id={{model_id}}&model_type=classify" method="post" enctype="multipart/form-data">
                 <label for="input-data" class="drop-container">
                     <span class="drop-title">Drop Input Data</span>
                     or
-                    <input type="file" class="data-input" id="input-data" accept="image/*" required>
+                    <input type="file" class="data-input" id="input-data" name="inputs" required>
                 </label>
                 <label for="output-data" class="drop-container">
                     <span class="drop-title">Drop Output Data</span>
                     or
-                    <input type="file" class="data-input" id="output-data" accept="image/*" required>
+                    <input type="file" class="data-input" id="output-data" name="outputs" required>
                 </label>
                 <button type="submit" class="start-training-btn"> Upload
                 </button>
