@@ -429,24 +429,24 @@ a {
 .sidebar {
     /* width: 100px; */
     height: 92.5vh;
-    background-color: #FCFCFD;
+    background-color: rgb(255, 140, 0);
     box-shadow: 5px 1px 10px 0px rgb(255 140 0 / 10%);
     position: absolute;
     left: 0px;
-    padding: 10px;
+    padding: 10px 4px;
 }
 
 .model-btn {
     font-weight: bold;
-    color:rgb(255, 146, 12);
+    color:rgb(255, 255, 255);
     padding: 10px 8px;
     border-radius: 7px;
     margin: 8px 4px;
 }
 
 .model-btn:hover {
-    background-color: rgb(255, 171, 69);
-    color:white;
+    background-color: rgb(255, 255, 255);
+    color:rgb(255, 140, 0);
     cursor: pointer;
 }
 

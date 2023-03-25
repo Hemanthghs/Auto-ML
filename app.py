@@ -31,24 +31,25 @@ def before_request():
     if 'user' in session:
         g.user = session['user']
 
-@app.route("/")
-def index():
-    if request.method == "GET":
-        if g.user:
-            return render_template("index.html",username=session['user'])
-        return redirect(url_for('login'))
+# @app.route("/")
+# def index():
+#     if request.method == "GET":
+#         if g.user:
+#             return render_template("index.html",username=session['user'])
+#         return redirect(url_for('login'))
 
-@app.route('/home')
-def home():
+@app.route('/')
+def index():
     data = []
     if g.user:
         for x in cr_data.find({"username":session["user"]}):
             data.append([
+                x["model_id"],
                 x["project_name"],
              x["date"],
             ])
     
-        return render_template("home.html",data = data,username=session['user'])
+        return render_template("index.html",data = data,username=session['user'])
     return redirect(url_for('login'))
 
 
@@ -116,7 +117,8 @@ def classify():
 @app.route("/regression")
 def regression():
     if g.user:
-        return render_template("regression.html", username = session["user"])
+        model_id = request.args.get("model_id")
+        return render_template("regression.html", username = session["user"], model_id = model_id)
     return redirect(url_for("index"))
 
 @app.route('/logout')
@@ -267,15 +269,26 @@ def history():
         for x in cr_data.find({"username":session["user"]}):
             data.append([
                 x["model_id"],
-             x["input_path"],
-                x["output_path"],
-                x["model_file"],
-                x["task_type"],
-                x["model_name"],
+                x["project_name"],
+                x["date"]
             ])
     
         return render_template("history.html",data = data,username=session['user'])
     return redirect(url_for('login'))
+
+@app.route("/model-history")
+def model_history():
+    if g.user:
+        model_id = request.args.get("model_id")
+        model_data = cr_data.find_one({"model_id":int(model_id)})
+        project_name = model_data["project_name"]
+        createdby = model_data["username"]
+        model_type = model_data["task_type"]
+        params = model_data["parameters"]
+        output_name = model_data["output_name"]
+        return render_template("model-history.html", username = session['user'], model_id = model_id, project_name = project_name, createdby = createdby, model_type = model_type, params = params, output_name = output_name)
+    return redirect(url_for('login'))
+
 @app.route("/download")
 def download():
     model_id = request.args.get("model_id")

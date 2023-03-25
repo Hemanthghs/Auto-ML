@@ -1,16 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="container mt-4">
-    <h3 class="card-title">Try Model</h3>
-    <form action="/try_model?model_id={{model_id}}" method="post">
+<div class="container">
+    <div class="data-upload">
+        <div class="try-model-container">
+            <div class="container">
+                <h2>Try Model</h2>
+                <form action="/try_model?model_id={{model_id}}" method="post">
         {%for i in inputs_data%}
-        <label for="{{i}}">{{i}}</label>
-            <input type="text" name="{{i}}" placeholder="{{i}}"><br>
-        {%endfor%}
-        <button type="submit">Predict</button>
-    </form>
+                    <label for="{{i}}" class="try-model-label">{{i}}</label>
+                    <input type="text" class="try-model-input" name="{{i}}" placeholder="{{i}}">
+                    {%endfor%}
+                    <button type="submit" class="create-project-btn">Predict</button>
+                </form>
+            </div>
 
+        </div>
+
+        <div class="line"></div>
+        <div class="instructions">
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Asperiores ab qui sapiente eum voluptas odio
+            distinctio quidem reiciendis in dolor cum mollitia possimus ipsa nesciunt natus vel enim, neque ad
+            accusamus excepturi aliquid tempore aliquam esse temporibus. Laboriosam itaque pariatur minima quam
+            rerum nesciunt fugit qui omnis, blanditiis quasi quisquam, minus quis in, quod dignissimos distinctio
+            vero esse ullam eos soluta veniam expedita incidunt error nam! Nemo quisquam qui minus sint nisi ad
+            temporibus obcaecati quis, recusandae at tenetur nesciunt saepe vel laborum accusamus, asperiores, quae
+            quibusdam beatae provident quos sunt! Earum facere laudantium porro soluta ratione impedit alias vitae
+            accusantium, autem ab excepturi expedita! Nihil nesciunt provident soluta dolore dolores dolor, non
+            facere quo delectus, impedit sit animi repellat eius ipsa incidunt dolorum expedita culpa voluptas omnis
+            voluptates veritatis beatae quibusdam natus. Tenetur aperiam a nisi quam harum? Accusamus veniam, iusto
+            mollitia dolor cumque quas veritatis voluptatibus saepe obcaecati officia rerum dicta quibusdam
+            voluptatem aut dignissimos ad, a voluptatum architecto exercitationem labore vitae. Consectetur enim
+            eius, vel tempora ea porro excepturi vero quas provident nemo culpa obcaecati omnis veritatis. Alias,
+            tempora cupiditate reprehenderit assumenda facere nisi iure cumque, doloribus quod dolores temporibus
+            ullam molestias non inventore. At, iste molestias?
+        </div>
+    </div>
 </div>
+
+
 
 {% endblock%}

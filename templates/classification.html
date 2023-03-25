@@ -8,41 +8,41 @@
     <h2>Upload Data</h2>
     <div class="data-upload">
         <div>
-            {% if toast=="success" %}
+            {%if toast=="success"%}
             <div class="">
                 <h3>Data uploaded successfully</h3>
             </div>
             {% endif %}
-            <form action="/upload?model_id={{model_id}}&model_type=regression" method="post" enctype="multipart/form-data">
+            <form action="/upload" method="post">
                 <label for="input-data" class="drop-container">
                     <span class="drop-title">Drop Input Data</span>
                     or
-                    <input type="file" class="data-input" id="input-data" name="inputs" required>
+                    <input type="file" class="data-input" id="input-data" accept="image/*" required>
                 </label>
                 <label for="output-data" class="drop-container">
                     <span class="drop-title">Drop Output Data</span>
                     or
-                    <input type="file" class="data-input" id="output-data" name="outputs" required>
+                    <input type="file" class="data-input" id="output-data" accept="image/*" required>
                 </label>
-                <button type="submit" class="start-training-btn"> Upload
+                <button type="submit" class="start-trainign-btn"> Upload
                 </button>
             </form>
             {% if classes %}
             <form action="/train?model_id={{model_id}}&model_type={{model_type}}" method="post">
                 <div class="algorithm">
                     <label class=""><b>Select Algorithm</b></label>
-                    <select class="form-control" name="model">
-                        <option value="linear_reg">Linear Regression</option>
-                        <option value="decision_tree_reg">Decision Tree Regressor</option>
-                        <option value="random_forest_reg">Random Forest Regressor</option>
-                        <option value="svm_reg">SVM Regressor</option>
-                        <option value="knn_reg">KNN Regressor</option>
-                      </select>
+                    <select name="model">
+                        <option value="logistic">Logistic Regression</option>
+                        <option value="decision_tree">Decision Tree</option>
+                        <option value="random_forest">Random Forest</option>
+                        <option value="svm">SVM</option>
+                        <option value="knn">KNN</option>
+                    </select>
                 </div>
-                <button type="submit" id="r1">
+                <button type="submit" id="r1" >
                 </button>
             </form>
-            {% endif %}
+            { %endif% }
 
         </div>
 
@@ -66,7 +66,7 @@
         </div>
     </div>
     <div class="start-training">
-        <label for="r1" class="start-training-btn">Start Training <i class="fa fa-cogs" aria-hidden="true"></i></label>
+        <label for="r1" class="start-training-btn">Start Training   <i class="fa fa-cogs" aria-hidden="true"></i></label>
     </div>
 </div>
 <script type="text/javascript">
@@ -75,8 +75,4 @@
         $("#content").hide();
     }
 </script>
-{% endblock %}
-
-
-
-
+{%endblock%}
