@@ -7,6 +7,7 @@
     }
 </style>
 <div class="sidebar">
+    <div class="model-btn current" onclick="modelDetails('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Model Details</div>
     <div class="model-btn" onclick="tryModel('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Try Model
     </div>
     <div class="model-btn"><i class="fa fa-rocket" aria-hidden="true"></i> Deploy Model</div>
@@ -14,7 +15,6 @@
     <div class="model-btn" onclick="visuals('{{model_id}}')"><i class="fa fa-bar-chart" aria-hidden="true"></i>
         Visualization</div>
     <div class="model-btn"><i class="fa fa-table" aria-hidden="true"></i> Metrics</div>
-    <div class="model-btn current"><i class="fa fa-file" aria-hidden="true"></i> Model Details</div>
 </div>
 
 <div class="model-container">
@@ -77,13 +77,6 @@
     </div>
 </div>
 
-<script>
-    function tryModel(model_id) {
-        window.location.href = "/try_model?model_id=" + model_id;
-    }
-    function visuals(model_id) {
-        window.location.href = "/visuals?model_id=" + model_id;
-    }
-</script>
+
 
 {% endblock %}
