@@ -12,6 +12,7 @@ from sklearn.preprocessing import LabelEncoder
 import pandas as pd
 import joblib
 import numpy as np
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -30,12 +31,27 @@ def before_request():
     if 'user' in session:
         g.user = session['user']
 
-@app.route("/")
+# @app.route("/")
+# def index():
+#     if request.method == "GET":
+#         if g.user:
+#             return render_template("index.html",username=session['user'])
+#         return redirect(url_for('login'))
+
+@app.route('/')
 def index():
-    if request.method == "GET":
-        if g.user:
-            return render_template("index.html",username=session['user'])
-        return redirect(url_for('login'))
+    data = []
+    if g.user:
+        for x in cr_data.find({"username":session["user"]}):
+            data.append([
+                x["model_id"],
+                x["project_name"],
+             x["date"],
+            ])
+    
+        return render_template("index.html",data = data,username=session['user'])
+    return redirect(url_for('login'))
+
 
 @app.route('/login',methods=['GET', 'POST'])
 def login():
@@ -49,6 +65,8 @@ def login():
                 return redirect(url_for('index',username=session['user']))
             return render_template('login.html',invalid_user="Invalid Username or Password")
         return render_template('login.html',invalid_user="Invalid Username or Password")
+    if request.args.get("account_created"):
+        return render_template('login.html',msg2="Account created successfully")
     return render_template('login.html')
 
 @app.route('/signup',methods=['GET', 'POST'])
@@ -62,19 +80,45 @@ def signup():
             username_taken_msg = "Username already taken, try another one"
             return render_template('signup.html',username_taken_msg=username_taken_msg)
         users.insert_one({"username":username,"password":password})
-        return redirect(url_for('login'))
+        return redirect(url_for('login', account_created=True))
     return render_template('signup.html')
+
+@app.route('/create-project', methods=["GET","POST"])
+def createProject():
+    username = session["user"]
+    if request.method == "GET":
+        return render_template("createproject.html", username = username)
+    task_type = request.form["tasktype"]
+    project_name = request.form["projectname"]
+    now = datetime.now()
+    date = now.strftime("%B %d, %Y")
+    model_data = counter.find_one({"type":"model"})
+    model_id = model_data['count'] + 1
+    debug(model_id)
+    counter.update_one({"type":"model"},{"$set":{"count":model_id}})
+    cr_data.insert_one({"username":username,"model_id":model_id,"project_name":project_name, "date":date,"task_type":task_type})
+
+    if task_type == "classification":
+        return redirect(url_for('classify', model_id = model_id))
+        # return render_template("classify.html", model_id = model_id)
+    elif task_type == "regression":
+        return redirect(url_for('regression', model_id = model_id))
+        # return render_template("regression.html", model_id = model_id)
+    
+
 
 @app.route("/classify")
 def classify():
     if g.user:
-        return render_template("classify.html", username = session["user"])
+        model_id = request.args.get("model_id")
+        return render_template("classify.html", username = session["user"], model_id = model_id)
     return redirect(url_for("index"))
 
 @app.route("/regression")
 def regression():
     if g.user:
-        return render_template("regression.html", username = session["user"])
+        model_id = request.args.get("model_id")
+        return render_template("regression.html", username = session["user"], model_id = model_id)
     return redirect(url_for("index"))
 
 @app.route('/logout')
@@ -100,11 +144,13 @@ def upload():
         output_path = os.path.join('data',fname)
         outputs.save(output_path)
 
-        model_type = request.args.get("type")
-        model_data = counter.find_one({"type":"model"})
-        model_id = model_data['count'] + 1
-        counter.update_one({"type":"model"},{"$set":{"count":model_id}})
-        cr_data.insert_one({"username":username,"model_id":model_id,"input_path":input_path, "output_path":output_path, "model_type":model_type})
+        model_type = request.args.get("model_type")
+        model_id = request.args.get("model_id")
+        debug(model_id)
+        cr_data.update_one({"model_id":int(model_id)},{"$set":{
+        "input_path":input_path,
+        "output_path":output_path,
+        }})
 
         #Return to the upload page 
         page = model_type + ".html"
@@ -119,6 +165,7 @@ def upload():
 
 @app.route("/train", methods=["POST"])
 def train():
+    # model_name means algorithm name
     model_name = request.form["model"]
     model_id = request.args.get("model_id")
     model_type = request.args.get("model_type")
@@ -235,15 +282,26 @@ def history():
         for x in cr_data.find({"username":session["user"]}):
             data.append([
                 x["model_id"],
-                x["input_path"],
-                x["output_path"],
-                x["model_file"],
-                x["model_type"],
-                x["model_name"],
+                x["project_name"],
+                x["date"]
             ])
     
         return render_template("history.html",data = data,username=session['user'])
     return redirect(url_for('login'))
+
+@app.route("/model-history")
+def model_history():
+    if g.user:
+        model_id = request.args.get("model_id")
+        model_data = cr_data.find_one({"model_id":int(model_id)})
+        project_name = model_data["project_name"]
+        createdby = model_data["username"]
+        model_type = model_data["task_type"]
+        params = model_data["parameters"]
+        output_name = model_data["output_name"]
+        return render_template("model-history.html", username = session['user'], model_id = model_id, project_name = project_name, createdby = createdby, model_type = model_type, params = params, output_name = output_name)
+    return redirect(url_for('login'))
+
 @app.route("/download")
 
 def download():
