@@ -1,19 +1,27 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+    .current {
+        background-color:  rgb(255, 255, 255) !important;
+        color: rgb(255, 140, 0) !important;
+    }
+</style>
 <div class="sidebar">
-        
-    <div class="model-btn"><i class="fa fa-file" aria-hidden="true"></i> Try Model</div>
+    <div class="model-btn" onclick="tryModel('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Try Model
+    </div>
     <div class="model-btn"><i class="fa fa-rocket" aria-hidden="true"></i> Deploy Model</div>
     <div class="model-btn"><i class="fa fa-file" aria-hidden="true"></i> Model Summary</div>
-    <div class="model-btn"><i class="fa fa-bar-chart" aria-hidden="true"></i> Visualization</div>
+    <div class="model-btn" onclick="visuals('{{model_id}}')"><i class="fa fa-bar-chart" aria-hidden="true"></i>
+        Visualization</div>
     <div class="model-btn"><i class="fa fa-table" aria-hidden="true"></i> Metrics</div>
+    <div class="model-btn current"><i class="fa fa-file" aria-hidden="true"></i> Model Details</div>
 </div>
 
 <div class="model-container">
 
     <div class="model-data">
         <div class="model-padding model-name">
-            <h3>{{project_name}}</h3> 
+            <h3>{{project_name}}</h3>
         </div>
         <div class="rt flex flex-row model-padding br-top">
             <h4 class="inline model-detail">Model ID</h4>
@@ -63,10 +71,19 @@
                     </span>
                 </div>
             </div>
-            
+
         </div>
 
     </div>
 </div>
+
+<script>
+    function tryModel(model_id) {
+        window.location.href = "/try_model?model_id=" + model_id;
+    }
+    function visuals(model_id) {
+        window.location.href = "/visuals?model_id=" + model_id;
+    }
+</script>
 
 {% endblock %}

@@ -104,8 +104,13 @@ def createProject():
     elif task_type == "regression":
         return redirect(url_for('regression', model_id = model_id))
         # return render_template("regression.html", model_id = model_id)
-    
 
+@app.route("/visuals")
+def visuals():
+    if g.user:
+        model_id = request.args.get('model_id')
+        return render_template("visuals.html", username = session['user'])
+    return redirect(url_for('login'))
 
 @app.route("/classify")
 def classify():

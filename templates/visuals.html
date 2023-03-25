@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+    .current {
+        background-color:  rgb(255, 255, 255) !important;
+        color: rgb(255, 140, 0) !important;
+    }
+</style>
+<div class="sidebar">
+    <div class="model-btn" onclick="tryModel('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Try Model
+    </div>
+    <div class="model-btn"><i class="fa fa-rocket" aria-hidden="true"></i> Deploy Model</div>
+    <div class="model-btn"><i class="fa fa-file" aria-hidden="true"></i> Model Summary</div>
+    <div class="model-btn current" onclick="visuals('{{model_id}}')"><i class="fa fa-bar-chart" aria-hidden="true"></i>
+        Visualization</div>
+    <div class="model-btn"><i class="fa fa-table" aria-hidden="true"></i> Metrics</div>
+    <div class="model-btn "><i class="fa fa-file" aria-hidden="true"></i> Model Details</div>
+</div>
+<div class="container">
+    visuals
+</div>
+
+{% endblock %}
