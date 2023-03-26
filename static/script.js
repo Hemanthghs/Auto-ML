@@ -9,3 +9,7 @@ function visuals(model_id) {
 function modelDetails(model_id) {
     window.location.href = "/model-history?model_id=" + model_id;
 }
+
+function report(model_id) {
+    window.location.href = "/report?model_id=" + model_id;
+}

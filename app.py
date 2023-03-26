@@ -13,6 +13,7 @@ import pandas as pd
 import joblib
 import numpy as np
 from datetime import datetime
+import pandas_profiling
 
 app = Flask(__name__)
 
@@ -30,13 +31,6 @@ def before_request():
     g.user = None 
     if 'user' in session:
         g.user = session['user']
-
-# @app.route("/")
-# def index():
-#     if request.method == "GET":
-#         if g.user:
-#             return render_template("index.html",username=session['user'])
-#         return redirect(url_for('login'))
 
 @app.route('/')
 def index():
@@ -112,6 +106,25 @@ def visuals():
         return render_template("visuals.html", model_id=model_id, username = session['user'])
     return redirect(url_for('login'))
 
+def generate_report(input, output):
+    df1 = pd.read_csv(input)
+    df2 = pd.read_csv(output)
+    df = pd.concat([df1, df2], axis=1)
+    report = pandas_profiling.ProfileReport(df)
+    report.to_file("./templates/report.html")
+
+@app.route("/report")
+def report():
+    if g.user:
+        model_id = request.args.get("model_id")
+        model_data = cr_data.find_one({"model_id":int(model_id)})
+        input_path = model_data["input_path"]
+        output_path = model_data["output_path"]
+        generate_report(input_path, output_path)
+        return render_template("report.html")
+    return redirect(url_for('login'))
+
+
 @app.route("/classify")
 def classify():
     if g.user:
@@ -166,7 +179,6 @@ def upload():
 
         return render_template(page, toast = "success", username=username, classes=classes, model_id = model_id, model_type = model_type)
     return redirect(url_for('login'))
-
 
 @app.route("/train", methods=["POST"])
 def train():
@@ -308,7 +320,6 @@ def model_history():
     return redirect(url_for('login'))
 
 @app.route("/download")
-
 def download():
     model_id = request.args.get("model_id")
     data_type = request.args.get("data")

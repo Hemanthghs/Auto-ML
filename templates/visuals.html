@@ -7,11 +7,11 @@
     }
 </style>
 <div class="sidebar">
-    <div class="model-btn" onclick="modelDetails('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Model Details</div>
+    <div class="model-btn" onclick="modelDetails('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Project Details</div>
     <div class="model-btn" onclick="tryModel('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Try Model
     </div>
     <div class="model-btn"><i class="fa fa-rocket" aria-hidden="true"></i> Deploy Model</div>
-    <div class="model-btn"><i class="fa fa-file" aria-hidden="true"></i> Model Summary</div>
+    <div class="model-btn" onclick="report('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Profiling Report</div>
     <div class="model-btn current" onclick="visuals('{{model_id}}')"><i class="fa fa-bar-chart" aria-hidden="true"></i>
         Visualization</div>
     <div class="model-btn"><i class="fa fa-table" aria-hidden="true"></i> Metrics</div>
