@@ -394,4 +394,5 @@ def debug(s):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    print("running.....")
+    app.run(port=1234, host='0.0.0.0')
