@@ -90,7 +90,7 @@ def createProject():
     model_id = model_data['count'] + 1
     debug(model_id)
     counter.update_one({"type":"model"},{"$set":{"count":model_id}})
-    cr_data.insert_one({"username":username,"model_id":model_id,"project_name":project_name, "date":date,"task_type":task_type})
+    cr_data.insert_one({"username":username,"model_id":model_id,"project_name":project_name,"deploy":"no", "date":date,"task_type":task_type})
 
     if task_type == "classification":
         return redirect(url_for('classify', model_id = model_id))
@@ -98,13 +98,6 @@ def createProject():
     elif task_type == "regression":
         return redirect(url_for('regression', model_id = model_id))
         # return render_template("regression.html", model_id = model_id)
-
-@app.route("/visuals")
-def visuals():
-    if g.user:
-        model_id = request.args.get('model_id')
-        return render_template("visuals.html", model_id=model_id, username = session['user'])
-    return redirect(url_for('login'))
 
 def generate_report(input, output):
     df1 = pd.read_csv(input)
@@ -118,12 +111,38 @@ def report():
     if g.user:
         model_id = request.args.get("model_id")
         model_data = cr_data.find_one({"model_id":int(model_id)})
+        if model_data["username"] != session['user']:
+            return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
         input_path = model_data["input_path"]
         output_path = model_data["output_path"]
         generate_report(input_path, output_path)
-        return render_template("report.html")
+        return render_template("profiling-report.html", model_id = model_id, username = session['user'])
     return redirect(url_for('login'))
 
+@app.route('/render-report')
+def render_report():
+    return render_template("report.html")
+
+@app.route("/deploy", methods=["GET", "POST"])
+def deploy():
+    if g.user:
+        if request.method == "GET":
+            model_id = request.args.get("model_id")
+            model_data = cr_data.find_one({"model_id":int(model_id)})
+            deploy = model_data["deploy"]
+            if deploy == "no":
+                return render_template("deploy.html", model_id = model_id)
+            return render_template("deploy.html", status = "true", model_id = model_id)
+        model_id = request.args.get("model_id")
+        status = request.args.get("status")
+        cr_data.update_one({"model_id":int(model_id)},{"$set":{
+            "deploy":status
+            }})
+        if status == "no":
+            return render_template("deploy.html", model_id = model_id)
+        else:
+            return render_template("deploy.html", status = "true", model_id = model_id)
+    return redirect(url_for('login'))
 
 @app.route("/classify")
 def classify():
@@ -164,7 +183,6 @@ def upload():
 
         model_type = request.args.get("model_type")
         model_id = request.args.get("model_id")
-        debug(model_id)
         cr_data.update_one({"model_id":int(model_id)},{"$set":{
         "input_path":input_path,
         "output_path":output_path,
@@ -275,6 +293,8 @@ def try_model():
     if request.method == "GET":
         model_id = request.args.get("model_id")
         model_data = cr_data.find_one({"model_id":int(model_id)})
+        if model_data["username"] != session['user']:
+            return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
         inputs_data = model_data["parameters"]
         output_name = model_data["output_name"]
         try:
@@ -283,6 +303,30 @@ def try_model():
         except:
             encodings_parsed = None
         return render_template("try_model.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
+    model_id = request.args.get("model_id")
+    model_data = cr_data.find_one({"model_id":int(model_id)})
+    model_file = model_data["model_file"]
+    values = list(request.form.values())
+    values = [float(x) for x in values]
+    model = joblib.load(model_file)
+    prediction = model.predict([values])
+    return "<h1>Prediction: " + str(prediction) + "</h1>"
+
+@app.route("/deployments", methods=["POST","GET"])
+def deployments():
+    if request.method == "GET":
+        model_id = request.args.get("model_id")
+        model_data = cr_data.find_one({"model_id":int(model_id)})
+        if model_data["deploy"] == "no":
+            return render_template("error.html",msg = "No deployment found")
+        inputs_data = model_data["parameters"]
+        output_name = model_data["output_name"]
+        try:
+            encodings = model_data["encodings"]
+            encodings_parsed = parse_encodings(encodings)
+        except:
+            encodings_parsed = None
+        return render_template("deployments.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
     model_id = request.args.get("model_id")
     model_data = cr_data.find_one({"model_id":int(model_id)})
     model_file = model_data["model_file"]
@@ -311,6 +355,8 @@ def model_history():
     if g.user:
         model_id = request.args.get("model_id")
         model_data = cr_data.find_one({"model_id":int(model_id)})
+        if model_data["username"] != session['user']:
+            return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
         project_name = model_data["project_name"]
         createdby = model_data["username"]
         model_type = model_data["task_type"]
@@ -324,6 +370,8 @@ def download():
     model_id = request.args.get("model_id")
     data_type = request.args.get("data")
     model_data = cr_data.find_one({"model_id":int(model_id)})
+    if model_data["username"] != session['user']:
+        return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
     if data_type == "input":
         return send_file(model_data["input_path"])
     elif data_type == "output":

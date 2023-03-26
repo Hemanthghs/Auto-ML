@@ -452,3 +452,12 @@ a {
 
 /* sidebar styling end  */
 
+.profiling-report {
+    margin-left: 150px;
+    height: 90vh;
+    width: 92%;
+}
+
+.deploy {
+    text-align:center;
+}

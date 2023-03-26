@@ -13,3 +13,7 @@ function modelDetails(model_id) {
 function report(model_id) {
     window.location.href = "/report?model_id=" + model_id;
 }
+
+function deploy(model_id) {
+    window.location.href = "/deploy?model_id=" + model_id;
+}
