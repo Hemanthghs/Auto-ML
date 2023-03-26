@@ -12,7 +12,7 @@
     </div>
     <div class="model-btn" onclick="deploy('{{model_id}}')"><i class="fa fa-rocket" aria-hidden="true"></i> Deploy Model</div>
     <div class="model-btn" onclick="report('{{model_id}}')"><i class="fa fa-file" aria-hidden="true"></i> Profiling Report</div>
-    <div class="model-btn"><i class="fa fa-table" aria-hidden="true"></i> Metrics</div>
+    <div class="model-btn" onclick="metrics('{{model_id}}')"><i class="fa fa-table" aria-hidden="true"></i> Metrics</div>
 </div>
 
 <div class="model-container">
@@ -20,6 +20,7 @@
     <div class="model-data">
         <div class="model-padding model-name">
             <h3>{{project_name}}</h3>
+            <span>Created on {{date}}</span>
         </div>
         <div class="rt flex flex-row model-padding br-top">
             <h4 class="inline model-detail">Model ID</h4>
@@ -32,6 +33,10 @@
         <div class="rt flex flex-row model-padding br-top">
             <h4 class="inline model-detail">Model Type</h4>
             <div class="inline model-detail">{{model_type}}</div>
+        </div>
+        <div class="rt flex flex-row model-padding br-top">
+            <h4 class="inline model-detail">Algorithm</h4>
+            <div class="inline model-detail">{{model_name}}</div>
         </div>
         <div class="rt flex flex-row model-padding br-top">
             <h4 class="inline model-detail">Input Parameters</h4>

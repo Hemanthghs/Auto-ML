@@ -14,6 +14,8 @@ import joblib
 import numpy as np
 from datetime import datetime
 import pandas_profiling
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 app = Flask(__name__)
 
@@ -245,6 +247,7 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
     output_name = y.columns[0]
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+    metrics = dict()
     if model_type == "classify":
         if model_name == "logistic":
             model = LogisticRegression()
@@ -256,6 +259,20 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
             model = SVC()
         else:
             model = KNeighborsClassifier()
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_train)
+        y_train = np.reshape(y_train, (y_train.shape[0], ))
+        y_pred = np.reshape(y_pred, (y_pred.shape[0], ))
+        acc = accuracy_score(y_train, y_pred)
+        prec = precision_score(y_train, y_pred, average='weighted')
+        rec = recall_score(y_train, y_pred, average='weighted')
+        f1 = f1_score(y_train, y_pred, average='weighted')
+
+        metrics["acc"] = acc.item()
+        metrics["prec"] = prec.item()
+        metrics["rec"] = rec.item()
+        metrics["f1"] = f1.item()
+        
     else:
         if model_name == "linear_reg":
             model = LinearRegression()
@@ -267,7 +284,19 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
             model = SVR()
         else:
             model = KNeighborsRegressor()
-    model.fit(X_train, y_train)
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_train)
+        mae = mean_absolute_error(y_train, y_pred)
+        mse = mean_squared_error(y_train, y_pred)
+        rmse = np.sqrt(mse)
+        r2 = r2_score(y_train, y_pred)
+        metrics["mae"] = mae.item()
+        metrics["mse"] = mse.item()
+        metrics["rmse"] = rmse.item()
+        metrics["r2"] = r2.item()
+
+        
+    
     model_path = "models/"+"model_"+str(model_id)+".sav"
     joblib.dump(model, model_path)
     cr_data.update_one({"model_id":int(model_id)},{"$set":{
@@ -276,7 +305,8 @@ def model_train(input_data, output_data, model_id, model_name, model_type):
         "parameters":parameters,
         "inputs_count":inputs_count,
         "output_name": output_name,
-        "encodings":encodings
+        "encodings":encodings,
+        "metrics":metrics
         }})
     return
 
@@ -350,6 +380,20 @@ def history():
         return render_template("history.html",data = data,username=session['user'])
     return redirect(url_for('login'))
 
+@app.route("/metrics")
+def metrics():
+    if g.user:
+        model_id = request.args.get("model_id")
+        model_data = cr_data.find_one({"model_id":int(model_id)})
+        metrics_data = model_data["metrics"]
+        task_type = model_data["task_type"]
+        model_type = task_type
+        model_name = model_data["model_name"]
+        if task_type == "classification":
+            return render_template("metrics.html", model_id = model_id, classify="true", model_type = model_type, model_name = model_name, metrics_data = metrics_data)
+        return render_template("metrics.html", model_id = model_id, model_type = model_type, model_name = model_name, metrics_data = metrics_data)
+    return redirect(url_for('login'))
+
 @app.route("/model-history")
 def model_history():
     if g.user:
@@ -362,7 +406,9 @@ def model_history():
         model_type = model_data["task_type"]
         params = model_data["parameters"]
         output_name = model_data["output_name"]
-        return render_template("model-history.html", username = session['user'], model_id = model_id, project_name = project_name, createdby = createdby, model_type = model_type, params = params, output_name = output_name)
+        model_name = model_data["model_name"]
+        date = model_data["date"]
+        return render_template("model-history.html",date = date, model_name = model_name, username = session['user'], model_id = model_id, project_name = project_name, createdby = createdby, model_type = model_type, params = params, output_name = output_name)
     return redirect(url_for('login'))
 
 @app.route("/download")

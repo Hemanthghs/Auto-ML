@@ -17,3 +17,7 @@ function report(model_id) {
 function deploy(model_id) {
     window.location.href = "/deploy?model_id=" + model_id;
 }
+
+function metrics(model_id) {
+    window.location.href = "/metrics?model_id=" + model_id;
+}
