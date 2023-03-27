@@ -213,7 +213,7 @@ a {
 }
 
 .data-upload div:nth-child(1) {
-    width: 40%;
+    /* width: 40%; */
 }
 
 
@@ -294,6 +294,15 @@ a {
 
 .instructions {
     width: 40%;
+}
+
+.instructions2 {
+    background-color: rgb(255 194 119);
+    width: 40%;
+    padding: 20px 50px;
+    border-radius: 10px;
+    margin-bottom: 69px;
+    box-shadow: 1px 4px 11px 2px grey;
 }
 
 .line {
@@ -459,4 +468,9 @@ a {
 
 .deploy {
     text-align:center;
+}
+
+.params-list {
+    height: 85px;
+    overflow: scroll;
 }

@@ -5,13 +5,13 @@
     <div class="data-upload">
         <div class="try-model-container">
             <div class="container">
-                <h1>Try Model</h1><br>
+                <h2>Try Model</h2>
                 <form action="/deployments?model_id={{model_id}}" method="post">
                     {%for i in inputs_data%}
                     <label for="{{i}}" class="try-model-label">{{i}}</label>
                     <input type="text" class="try-model-input" name="{{i}}" placeholder="{{i}}">
                     {%endfor%}
-                    <button type="submit" class="create-project-btn">Predict</button>
+                    <br><button type="submit" class="create-project-btn">Predict</button>
                 </form>
 
             </div>
