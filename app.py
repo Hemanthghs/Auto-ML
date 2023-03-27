@@ -341,7 +341,16 @@ def try_model():
         values = [float(x) for x in values]
         model = joblib.load(model_file)
         prediction = model.predict([values])
-        return "<h1>Prediction: " + str(prediction) + "</h1>"
+        if model_data["username"] != session['user']:
+            return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
+        inputs_data = model_data["parameters"]
+        output_name = model_data["output_name"]
+        try:
+            encodings = model_data["encodings"]
+            encodings_parsed = parse_encodings(encodings)
+        except:
+            encodings_parsed = None
+        return render_template("try_model.html",prediction = str(prediction), inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
     return redirect(url_for('login'))
 
 @app.route("/deployments", methods=["POST","GET"])
@@ -366,7 +375,16 @@ def deployments():
     values = [float(x) for x in values]
     model = joblib.load(model_file)
     prediction = model.predict([values])
-    return "<h1>Prediction: " + str(prediction) + "</h1>"
+    if model_data["deploy"] == "no":
+        return render_template("error.html",msg = "No deployment found")
+    inputs_data = model_data["parameters"]
+    output_name = model_data["output_name"]
+    try:
+        encodings = model_data["encodings"]
+        encodings_parsed = parse_encodings(encodings)
+    except:
+        encodings_parsed = None
+    return render_template("deployments.html",prediction = str(prediction), inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
 
 @app.route("/history")
 def history():
