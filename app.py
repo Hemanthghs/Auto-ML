@@ -320,27 +320,29 @@ def parse_encodings(encodings):
 
 @app.route("/try_model", methods=["POST","GET"])
 def try_model():
-    if request.method == "GET":
+    if g.user:
+        if request.method == "GET":
+            model_id = request.args.get("model_id")
+            model_data = cr_data.find_one({"model_id":int(model_id)})
+            if model_data["username"] != session['user']:
+                return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
+            inputs_data = model_data["parameters"]
+            output_name = model_data["output_name"]
+            try:
+                encodings = model_data["encodings"]
+                encodings_parsed = parse_encodings(encodings)
+            except:
+                encodings_parsed = None
+            return render_template("try_model.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
         model_id = request.args.get("model_id")
         model_data = cr_data.find_one({"model_id":int(model_id)})
-        if model_data["username"] != session['user']:
-            return render_template("error.html", username = session['user'],msg = "Model not found with the ID")
-        inputs_data = model_data["parameters"]
-        output_name = model_data["output_name"]
-        try:
-            encodings = model_data["encodings"]
-            encodings_parsed = parse_encodings(encodings)
-        except:
-            encodings_parsed = None
-        return render_template("try_model.html", inputs_data = inputs_data, output_name = output_name, model_id = model_id, encodings = encodings_parsed)
-    model_id = request.args.get("model_id")
-    model_data = cr_data.find_one({"model_id":int(model_id)})
-    model_file = model_data["model_file"]
-    values = list(request.form.values())
-    values = [float(x) for x in values]
-    model = joblib.load(model_file)
-    prediction = model.predict([values])
-    return "<h1>Prediction: " + str(prediction) + "</h1>"
+        model_file = model_data["model_file"]
+        values = list(request.form.values())
+        values = [float(x) for x in values]
+        model = joblib.load(model_file)
+        prediction = model.predict([values])
+        return "<h1>Prediction: " + str(prediction) + "</h1>"
+    return redirect(url_for('login'))
 
 @app.route("/deployments", methods=["POST","GET"])
 def deployments():
@@ -441,4 +443,4 @@ def debug(s):
 
 if __name__ == "__main__":
     print("running.....")
-    app.run(port=1234, host='0.0.0.0')
+    app.run(debug=True,port=1234, host='0.0.0.0')
