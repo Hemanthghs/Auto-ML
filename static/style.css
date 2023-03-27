@@ -290,6 +290,7 @@ a {
 
 .login {
     height: 80vh;
+    justify-content: center;
 }
 
 .instructions {
@@ -474,3 +475,16 @@ a {
     height: 85px;
     overflow: scroll;
 }
+
+
+.log-image {
+    border: 1px solid beige;
+    width: 600px;
+    height: 400px;
+    box-shadow: 1px 1px 7px 1px grey;
+}
+
+.login-block {
+    margin-right: 100px;
+}
+
