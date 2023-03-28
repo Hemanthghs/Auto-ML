@@ -19,7 +19,7 @@
     <div class="deploy">
         {% if status %}
         <h3>Project deployed successfully</h3>
-        <a href="http://localhost:1234/deployments?model_id={{model_id}}" target="_blank">Click Here</a>
+        <a href="/deployments?model_id={{model_id}}" target="_blank">Click Here</a>
         <form action="/deploy?model_id={{model_id}}&status=no" method="post">
             <button type="submit" class="start-training-btn">Stop</button>
         </form>
