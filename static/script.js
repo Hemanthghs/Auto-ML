@@ -21,3 +21,11 @@ function deploy(model_id) {
 function metrics(model_id) {
     window.location.href = "/metrics?model_id=" + model_id;
 }
+
+function login(){
+    window.location.href = "/login";
+}
+
+function signup(){
+    window.location.href = "/signup"
+}
