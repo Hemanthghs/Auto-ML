@@ -444,6 +444,32 @@ def download():
         return send_file(model_data["output_path"])
     return send_file(model_data["model_file"])
 
+@app.route('/sample-download')
+def sample_download():
+    if g.user:
+        data = [
+            "cancer_input.csv","cancer_output.csv",
+            "drug_inputs.csv","drug_outputs.csv",
+            "sales_input.csv","sales_output.csv",
+            "wineQuality_inputs.csv","wineQuality_outputs.csv"
+        ]
+        data_id = request.args.get("id")
+        path = "sample_data/" + data[int(data_id)]
+        return send_file(path)
+    return redirect(url_for('login'))
+
+@app.route('/sample-data')
+def sample_data():
+    if g.user:
+        ids = [
+            ["Cancer Prediction",0,1],
+            ["Drugs Classification",2,3],
+            ["Sales Prediction",4,5],
+            ["Wine Quality Prediction",6,7]
+        ]
+        return render_template("sample-data.html",data=ids, username = session['user'])
+    return redirect(url_for('login'))
+
 @app.route("/clear", methods=["POST", "GET"])
 def clear():
     if request.method == "POST":
