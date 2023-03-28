@@ -15,6 +15,21 @@ a {
     text-decoration: none;
 }
 
+.video img {
+    width: 35%;
+    margin-right: 50px;
+    border-radius: 12px;
+    box-shadow: 6px 7px 10px grey;
+}
+
+.video {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 50px;
+    background-color: #f2f6f9;
+}
+
 /* Utility Classes End*/
 .center {
     text-align: center;
@@ -97,11 +112,12 @@ a {
 .project {
     width: 20%;
     padding: 20px 24px;
-    margin: 16px 64px;
-    background: #F3F6F9;
+    margin: 24px 64px;
+    background: #ffffff;
     line-height: 24px;
     border-radius: 16px;
     cursor: pointer;
+    box-shadow: 2px 2px 5px grey;
 }
 
 .container h2 {
