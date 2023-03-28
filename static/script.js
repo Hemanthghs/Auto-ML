@@ -29,3 +29,20 @@ function login(){
 function signup(){
     window.location.href = "/signup"
 }
+
+function downloadSample(id) {
+    window.location.href = "/sample-download?id=" + id
+}
+
+function home(){
+    window.location.href = "/";
+}
+
+
+function hist(){
+    window.location.href = "/history";
+}
+
+function samples(){
+    window.location.href = "/sample-data";
+}
