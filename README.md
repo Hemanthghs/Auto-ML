@@ -1,4 +1,4 @@
-# Auto-ML Web Application
+# Auto-ML 
 
 ## Overview
 
